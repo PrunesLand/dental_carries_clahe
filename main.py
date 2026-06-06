@@ -117,7 +117,7 @@ def run_reporting(all_results: dict) -> None:
     df = build_results_table(all_results)
     print_results_table(df)
     plot_forest(all_results, save_path=os.path.join(config.FIG_DIR, "forest_plot.png"))
-    plot_validation_curves(all_results, save_path=os.path.join(config.FIG_DIR, "validation_curves.png"))
+    plot_validation_curves(all_results, save_dir=config.FIG_DIR)
 
 
 def run_visualization(cache: ImageCache, file_names: np.ndarray) -> None:

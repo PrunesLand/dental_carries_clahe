@@ -77,7 +77,7 @@ def plot_forest(all_results: dict, save_path: str | None = None) -> None:
     ax.set_yticks(ys)
     ax.set_yticklabels(config.ENCODERS)
     ax.set_xlabel("Delta DSC  (CLAHE − Baseline)  with 95% CI")
-    ax.set_title("Effect of CLAHE per encoder (U-Net)")
+    ax.set_ylabel("Encoder")
     plt.tight_layout()
 
     if save_path:
@@ -86,29 +86,32 @@ def plot_forest(all_results: dict, save_path: str | None = None) -> None:
     plt.show()
 
 
-def plot_validation_curves(all_results: dict, save_path: str | None = None) -> None:
-    """Per-encoder validation loss and IoU curves (baseline vs CLAHE)."""
-    n = len(config.ENCODERS)
-    fig, axes = plt.subplots(n, 2, figsize=(12, 3 * n))
-    axes = np.atleast_2d(axes)   # keep 2-D indexing valid when n == 1
+def plot_validation_curves(all_results: dict, save_dir: str | None = None) -> None:
+    """Per-encoder validation loss and IoU curves (baseline vs CLAHE).
 
-    for i, enc in enumerate(config.ENCODERS):
+    Saves one file per encoder per metric:
+        {save_dir}/{encoder}_val_loss.png
+        {save_dir}/{encoder}_val_iou.png
+    """
+    metrics = [
+        ("loss", "val Tversky loss"),
+        ("iou",  "val IoU"),
+    ]
+
+    for enc in config.ENCODERS:
         d = all_results[enc]
-        axes[i, 0].plot(d["hist_base"]["loss"], "--", label="baseline")
-        axes[i, 0].plot(d["hist_clahe"]["loss"], label="clahe")
-        axes[i, 0].set_title(f"{enc}: val Tversky loss")
-        axes[i, 0].set_xlabel("epoch")
-        axes[i, 0].legend()
+        for key, ylabel in metrics:
+            fig, ax = plt.subplots(figsize=(6, 4))
+            ax.plot(d["hist_base"][key], "--", label="baseline")
+            ax.plot(d["hist_clahe"][key], label="clahe")
+            ax.set_xlabel("epoch")
+            ax.set_ylabel(ylabel)
+            ax.legend()
+            plt.tight_layout()
 
-        axes[i, 1].plot(d["hist_base"]["iou"], "--", label="baseline")
-        axes[i, 1].plot(d["hist_clahe"]["iou"], label="clahe")
-        axes[i, 1].set_title(f"{enc}: val IoU")
-        axes[i, 1].set_xlabel("epoch")
-        axes[i, 1].legend()
-
-    plt.tight_layout()
-
-    if save_path:
-        plt.savefig(save_path, dpi=150, bbox_inches="tight")
-        print(f"Saved validation curves -> {save_path}")
-    plt.show()
+            if save_dir:
+                path = os.path.join(save_dir, f"{enc}_val_{key}.png")
+                plt.savefig(path, dpi=150, bbox_inches="tight")
+                print(f"Saved -> {path}")
+            plt.show()
+            plt.close(fig)
