@@ -10,7 +10,7 @@ architectures?
 | Architecture | U-Net (`segmentation_models_pytorch`) |
 | Encoders | `resnet50`, `efficientnet-b4`, `vgg16_bn`, `densenet121`, `mobilenet_v2` |
 | Variable | CLAHE on vs. off |
-| CV scheme | 5-fold × 5-repeat = **25 paired runs** per (encoder, condition) |
+| CV scheme | 5-fold × 3-repeat = **15 paired runs** per (encoder, condition) |
 | Statistics | Nadeau-Bengio corrected paired t-test + Holm correction across encoders |
 
 ---
@@ -110,7 +110,7 @@ Open [config.py](config.py) to adjust any parameter before running:
 |----------|---------|-------------|
 | `ENCODERS` | 5 encoders | List of SMP encoder names to test |
 | `K_FOLDS` | 5 | Number of CV folds |
-| `N_REPEATS` | 5 | Number of CV repeats (total runs = K×N) |
+| `N_REPEATS` | 3 | Number of CV repeats (total runs = K×N) |
 | `EPOCHS` | 30 | Training epochs per run |
 | `SEED` | 42 | Global random seed |
 | `IMAGE_SIZE` | `(512, 1024)` | Resize target (H, W) |
@@ -178,16 +178,3 @@ python download_data.py
 The panel images are caption-free and sized for direct use as IEEE subfigures.
 See the LaTeX snippet in the original notebook for a ready-to-use `figure*`
 environment.
-
----
-
-## Statistical notes
-
-- **Nadeau-Bengio corrected t-test** — adjusts the variance estimate for the
-  non-independence of CV folds.  A standard paired t-test would be
-  anti-conservative here.
-- **Holm correction** — controls the family-wise error rate across the 5
-  encoder comparisons.
-- Results are framed as a *relative* CLAHE effect (no separate held-out test
-  set given the ~100-image dataset).  The best-epoch selection bias is
-  symmetric across conditions and cancels in the paired difference.
