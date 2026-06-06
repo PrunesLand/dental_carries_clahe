@@ -28,6 +28,7 @@ def build_model(encoder: str, weights: str | None = "imagenet") -> torch.nn.Modu
     model = _build_unet(encoder, weights)
     if config.USE_COMPILE and device == "cuda":
         try:
+            torch._dynamo.config.suppress_errors = True  # fall back to eager on first-forward compile failure
             model = torch.compile(model)
         except Exception as e:  # never let a compile issue break the run
             print(f"  [warn] torch.compile unavailable ({e}); running eager.")

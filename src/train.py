@@ -248,6 +248,7 @@ def run_kfold_cv(
             ckpt_path = os.path.join(config.CKPT_DIR, f"{encoder}_{tag}_run0.pth")
             torch.save(unwrap(model).state_dict(), ckpt_path)
 
+        del tl, vl  # shut down persistent workers immediately before next run
         del model, opt
         if scaler:
             del scaler
