@@ -1,0 +1,14 @@
+# Dataset (downloaded via download_data.py — do not commit)
+dataset_root/
+
+# Generated outputs: checkpoints, figures, cached results
+outputs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Kaggle credentials — never commit
+kaggle.json
