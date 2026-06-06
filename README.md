@@ -178,3 +178,4 @@ python download_data.py
 The panel images are caption-free and sized for direct use as IEEE subfigures.
 See the LaTeX snippet in the original notebook for a ready-to-use `figure*`
 environment.
+# dental_segmentation_experiment
